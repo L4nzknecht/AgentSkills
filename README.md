@@ -6,7 +6,7 @@ My personal base of agent skills for GitHub Copilot: which skill packs I use, ho
 
 | Pack | Source | Plugin | Marketplace |
 |------|--------|--------|-------------|
-| Matt Pocock skills (grilling, TDD, specs/tickets, code review, domain modelling, ...) | https://github.com/mattpocock/skills | `mattpocock-skills` | `mattpocock/skills` |
+| Matt Pocock skills (`/grill-me`, TDD, specs/tickets, code review, domain modelling, ...) | https://github.com/mattpocock/skills | `mattpocock-skills` | `mattpocock/skills` |
 | Ponytail (lazy senior dev mode: smallest change that solves the task) | https://github.com/DietrichGebert/ponytail | `ponytail` | `DietrichGebert/ponytail` |
 
 Full, current skill lists live in each upstream repo (`skills/` folder).

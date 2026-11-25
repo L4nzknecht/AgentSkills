@@ -34,4 +34,4 @@ Return exactly these sections in this order, in the configured language (heading
 
 **Conflicts:** Contradictions, missing decisions, ambiguities, and related stories. When there are none, write exactly: `None`.
 
-**Next step:** `grilling` on `docs\US-<ID>.md`, then implement, then `user-story-review` (the brief is named only after a successful read-back).
+**Next step:** `/grill-me` on `docs\US-<ID>.md`, then implement, then `/user-story-review` (the brief is named only after a successful read-back).
