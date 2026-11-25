@@ -31,12 +31,13 @@ If a marketplace name differs, run `copilot plugin marketplace list` and use tha
 | Skill | Purpose |
 |-------|---------|
 | [`init`](skills/init/SKILL.md) | One-time machine setup: installs all the plugins above into GitHub Copilot. |
-| [`repo-init`](skills/repo-init/SKILL.md) | Per-repo setup: tailors the general skills to the current repository (conventions, test/build commands, docs layout). |
+| [`repo-init`](skills/repo-init/SKILL.md) | Per-repo setup: tailors the general skills to the current repository (conventions, test/build commands, docs layout), including tracker access through an MCP server (Azure DevOps with a PAT, Jira/Confluence via the Atlassian server). |
+| [`user-story-research`](skills/user-story-research/SKILL.md) | General skill: researches a user story from the issue tracker (Azure DevOps, Jira, ...) plus its knowledge base (wiki, Confluence), repo docs and code, and saves a German brief to `docs\US-<ID>.md`. `repo-init` copies it into the repo as `user-story-research-<repo>` with tracker, organization, project and knowledge base filled in. |
 
 Install them by copying into your personal skills folder:
 
 ```powershell
-Copy-Item -Recurse skills\init, skills\repo-init $HOME\.copilot\skills\
+Copy-Item -Recurse skills\init, skills\repo-init, skills\user-story-research $HOME\.copilot\skills\
 ```
 
 Then in any session say "init" (machine setup) or "repo-init" (in a repo).

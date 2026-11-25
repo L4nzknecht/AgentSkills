@@ -1,11 +1,12 @@
 ---
 name: init
-description: Install my standard agent skill packs (Matt Pocock skills, Ponytail) into GitHub Copilot as plugins. Use for "init", "set up my skills", "install my skills" on a new machine.
+description: Install my standard skill packs into GitHub Copilot as plugins.
+disable-model-invocation: true
 ---
 
 # init
 
-Install every pack in the list below as a Copilot plugin. Idempotent: skip what is already installed.
+Install every pack in the table as a Copilot plugin. Idempotent: skip packs already installed.
 
 ## Packs
 
@@ -14,19 +15,21 @@ Install every pack in the list below as a Copilot plugin. Idempotent: skip what 
 | `mattpocock-skills` | `mattpocock/skills` | `mattpocock` |
 | `ponytail` | `DietrichGebert/ponytail` | `ponytail` |
 
-Add new packs here; the steps below read this table.
+Add new packs here; the steps read this table.
+
+## Own skills
+
+Every folder under `skills/` of the `L4nzknecht/AgentSkills` repo is a general skill, installed to `~/.copilot/skills/` (currently `init`, `repo-init`, `user-story-research`).
 
 ## Steps
 
-1. Run `copilot plugin list`. Note which plugins are already installed.
+1. Run `copilot plugin list` to find which table plugins are missing.
 2. For each missing pack:
    ```
    copilot plugin marketplace add <marketplace repo>
    copilot plugin install <plugin>@<marketplace name>
    ```
-   If the marketplace name is rejected, run `copilot plugin marketplace list` and use the name shown.
-3. Run `copilot plugin list` again and confirm every plugin in the table is present.
-4. Report installed / already present / failed. Tell the user to restart the Copilot session so new skills load.
-5. Suggest `repo-init` for the current repository.
-
-Don't modify anything else on the machine.
+   If the marketplace name is rejected, take the name from `copilot plugin marketplace list`.
+3. Run `copilot plugin list` again. Done when every table plugin appears; retry or report each one that doesn't.
+4. Install own skills: use this checkout if it is the AgentSkills repo, otherwise `gh repo clone L4nzknecht/AgentSkills` to a temp folder. Copy each `skills/<name>` folder to `~/.copilot/skills/<name>`, overwriting the general copy. Done when every folder has a `SKILL.md` at the target.
+5. Report each pack and own skill as installed, already present, or failed. Tell the user to restart Copilot so the new skills load, and to run `repo-init` in each repository.
