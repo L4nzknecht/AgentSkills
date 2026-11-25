@@ -30,16 +30,17 @@ If a marketplace name differs, run `copilot plugin marketplace list` and use tha
 
 | Skill | Purpose |
 |-------|---------|
-| [`init`](skills/init/SKILL.md) | One-time machine setup: installs the plugins above and my own skills into GitHub Copilot. |
+| [`init`](skills/init/SKILL.md) | One-time machine setup: installs the plugins above and this repo's `agent-skills` plugin. |
 | [`repo-init`](skills/repo-init/SKILL.md) | Per-repo setup: tailors the general skills to the current repository (conventions, test/build commands, docs layout), adds MCP servers for tools its instruction files require, and sets up tracker access through an MCP server (Azure DevOps with browser sign-in or a PAT, Jira/Confluence via the Atlassian server), registered once in `~/.copilot/mcp-config.json`. |
 | [`user-story-research`](skills/user-story-research/SKILL.md) | General skill: researches a user story from the issue tracker (Azure DevOps, Jira, ...) plus its knowledge base (wiki, Confluence), repo docs and code, and saves a brief in a configurable language to `docs\US-<ID>.md`. `repo-init` copies it into the repo as the personal, git-ignored `user-story-research-<repo>` with its configuration (tracker, organization, project, knowledge base, specifications, language) filled in. |
 | [`user-story-review`](skills/user-story-review/SKILL.md) | General skill: reviews the implementation against `docs\US-<ID>.md` from `user-story-research` (every criterion, tests, scope creep), runs `ponytail-review` for bloat, duplication and simplifications, and writes the result in a `## Review` section of that file. |
 | [`repo-init-speckit-ralph`](skills/repo-init-speckit-ralph/SKILL.md) | Per-repo setup of the [spec-kit Ralph loop](https://github.com/Rubiss-Projects/spec-kit-ralph): checks `specify`, initialises spec-kit, adds the `ralph` extension and writes its config (agent CLI, model, iterations, commit style). |
 
-Install them by copying into your personal skills folder:
+This repo is a plugin marketplace (`.github/plugin/marketplace.json`) with one plugin, `agent-skills` (`plugin.json`). The skills load in every session, including general chats:
 
-```powershell
-Copy-Item -Recurse -Force skills\* $HOME\.copilot\skills\
+```bash
+copilot plugin marketplace add L4nzknecht/AgentSkills   # or a local checkout path: loads live, edits apply on the next session
+copilot plugin install agent-skills@agent-skills
 ```
 
-Then run `/init` once per machine and `/repo-init` in each repository.
+Then run `/init` once per machine for the other packs, and `/repo-init` in each repository.

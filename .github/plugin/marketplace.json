@@ -1,0 +1,13 @@
+{
+  "name": "agent-skills",
+  "description": "L4nzknecht's personal agent skills.",
+  "owner": { "name": "L4nzknecht", "url": "https://github.com/L4nzknecht" },
+  "plugins": [
+    {
+      "name": "agent-skills",
+      "description": "Machine and repo setup, user-story research and review, spec-kit Ralph loop setup.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
