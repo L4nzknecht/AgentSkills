@@ -1,12 +1,12 @@
 ---
 name: init
-description: Install my standard skill packs into GitHub Copilot as plugins.
+description: Install my skill packs and own skills into GitHub Copilot.
 disable-model-invocation: true
 ---
 
 # init
 
-Install every pack in the table as a Copilot plugin. Idempotent: skip packs already installed.
+Install every pack in the table as a Copilot plugin, and every own skill into `~/.copilot/skills/`. Idempotent: skip what is already installed.
 
 ## Packs
 
@@ -16,10 +16,6 @@ Install every pack in the table as a Copilot plugin. Idempotent: skip packs alre
 | `ponytail` | `DietrichGebert/ponytail` | `ponytail` |
 
 Add new packs here; the steps read this table.
-
-## Own skills
-
-Every folder under `skills/` of the `L4nzknecht/AgentSkills` repo is a general skill, installed to `~/.copilot/skills/` (currently `init`, `repo-init`, `user-story-research`, `user-story-review`, `repo-init-speckit-ralph`).
 
 ## Steps
 
@@ -31,5 +27,5 @@ Every folder under `skills/` of the `L4nzknecht/AgentSkills` repo is a general s
    ```
    If the marketplace name is rejected, take the name from `copilot plugin marketplace list`.
 3. Run `copilot plugin list` again. Done when every table plugin appears; retry or report each one that doesn't.
-4. Install own skills: use this checkout if it is the AgentSkills repo, otherwise `gh repo clone L4nzknecht/AgentSkills` to a temp folder. Copy each `skills/<name>` folder to `~/.copilot/skills/<name>`, overwriting the general copy. Done when every folder has a `SKILL.md` at the target.
+4. **Own skills** are the folders under `skills/` of the `L4nzknecht/AgentSkills` repo: use this checkout if it is that repo, otherwise `gh repo clone L4nzknecht/AgentSkills` to a temp folder. Copy each folder with all its files to `~/.copilot/skills/<name>`, replacing the installed copy. Done when every folder's `SKILL.md` exists at the target and its frontmatter parses as YAML.
 5. Report each pack and own skill as installed, already present, or failed. Tell the user to restart Copilot so the new skills load, and to run `repo-init` in each repository.

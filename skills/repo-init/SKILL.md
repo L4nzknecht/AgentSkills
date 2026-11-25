@@ -1,34 +1,23 @@
 ---
 name: repo-init
-description: Set up the current repository: AGENTS.md, glossary, and a repo-specific user-story-research skill with tracker access.
+description: Set up the current repository with AGENTS.md, a glossary, and a repo-specific user-story-research skill with tracker access.
 disable-model-invocation: true
 ---
 
 # repo-init
 
-Record repo facts once, in `AGENTS.md`, and generate the repo-specific `user-story-research-<repo>` skill.
+Record the repository's facts once, in `AGENTS.md`, and specialise `user-story-research` for it. Every file holds only verified facts about this repository.
 
 ## Steps
 
-1. **Check init**: if `~/.copilot/skills/user-story-research/SKILL.md` is missing, tell the user to run `init` first and stop.
-2. **Inspect** the repo. Done when each of these is known or confirmed absent: languages, package manager, build/test/lint commands, folder layout, `AGENTS.md`/`CLAUDE.md`/`CONTRIBUTING.md`/`GLOSSARY.md`/`docs/adr`, CI config, issue tracker (GitHub, Azure DevOps, ...). Run each command before recording it.
-3. **Write `AGENTS.md`**: create it, or extend the existing one by appending or editing sections. It holds only what the environment can't tell the agent:
-   - build, test, lint commands, plus the smallest-test command
-   - conventions and layout not obvious from the code
-   - where specs, ADRs and the glossary live
-4. **Create `GLOSSARY.md`** when the repo has real domain terms.
-5. **Generate `user-story-research-<repo>`** when the repo uses an issue tracker with user stories. `<repo>` is the repository folder name in kebab-case. Ask the user (`ask_user`) for the tracker (Azure DevOps, Jira, ...), organization or site, project, and knowledge base (Azure DevOps wiki, Confluence space, ...), and the output language (default English); propose values detected from `git remote`, CI config, or docs as defaults. Copy the general skill to `.github/skills/user-story-research-<repo>/SKILL.md`, set its frontmatter `name` to `user-story-research-<repo>`, and fill its Configuration table with the answers. Done when the copy's name matches its folder and no `<unset>` remains; an existing copy is updated in place. Only this skill is specialised; the Matt Pocock and Ponytail skills stay general.
-6. **Set up tracker access** for the chosen tracker. Done when a read of one story through an MCP server succeeds. Tokens live in the user's environment, never in a file, chat, or commit. If story and knowledge-base reads already work through an available MCP server, finish this step.
-   - **Jira / Confluence**: guide the user to the Atlassian MCP server and its sign-in, then confirm with a story read.
-   - **Azure DevOps**: the local server accepts a PAT (the remote `https://mcp.dev.azure.com/<org>` endpoint uses Entra OAuth only):
-     1. Verify `node --version` is 20 or newer.
-     2. The user creates a PAT at `https://dev.azure.com/<org>/_usersSettings/tokens`, scoped to the organization with **Work Items: Read** and **Wiki: Read**, and sets it as the user environment variable `ADO_MCP_AUTH_TOKEN` themselves.
-     3. Add the server to the repo's `.mcp.json` without any secret (the process inherits the variable):
-        ```json
-        { "mcpServers": { "azure-devops": { "type": "stdio", "command": "npx", "args": ["-y", "@azure-devops/mcp", "<org>", "--authentication", "envvar"] } } }
-        ```
-     4. The user restarts Copilot, then reads a work item of `<project>` to confirm.
-   - If the Copilot app can't run local servers, say so and point to VS Code's `.vscode/mcp.json` with the same command.
-7. **Show the diff** and wait for the user's confirmation. Commit only when asked.
+1. **Inspect** the repo. Done when each of these is known or confirmed absent: languages, package manager, build/test/lint commands, folder layout, `AGENTS.md`/`CLAUDE.md`/`CONTRIBUTING.md`/`GLOSSARY.md`/`docs/adr`, specification docs, CI config, issue tracker. Run each command before recording it.
+2. **Write `AGENTS.md`**: create it or extend the existing one. It holds what the environment cannot tell an agent: the build, test, and lint commands plus the smallest-test command, conventions and layout not obvious from the code, and where specs, ADRs, and the glossary live. Done when every command in it has run successfully and every path in it exists.
+3. **Glossary**: when the code or docs use domain terms, run the `domain-modeling` skill to create or update `GLOSSARY.md`. Done when it exists, or the repo is confirmed to have no domain terms.
+4. **Generate `user-story-research-<repo>`** when the repo tracks user stories in an issue tracker; `<repo>` is the repository folder name in kebab-case.
+   1. Confirm `~/.copilot/skills/user-story-research/` exists; otherwise tell the user to run `init` and skip to step 6.
+   2. Ask the user (`ask_user`, one form) for every Configuration setting of the general skill (tracker, organization or site, project, knowledge base, specifications location and name, language), with values detected from `git remote`, CI config, and docs as defaults.
+   3. Copy the general skill folder to `.github/skills/user-story-research-<repo>/`, set the frontmatter `name` to the folder name, and fill the Configuration table. The copy differs from the general skill only in these two places; re-run this step after the general skill changes.
 
-Every file stays short and holds verified facts, never copies of upstream skill text.
+   Done when the copy's name matches its folder and no `<unset>` remains. Only this skill is specialised; the plugin skills stay general.
+5. **Tracker access**: follow [`tracker-azure-devops.md`](tracker-azure-devops.md) or [`tracker-jira.md`](tracker-jira.md) for the chosen tracker. Done when one story and one knowledge-base page read successfully through an MCP server.
+6. **Show the diff** and wait for the user's confirmation. Commit only when asked.

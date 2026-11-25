@@ -6,30 +6,16 @@ disable-model-invocation: true
 
 # repo-init-speckit-ralph
 
-Install and configure the [Ralph loop](https://github.com/Rubiss-Projects/spec-kit-ralph) extension for spec-kit in the repository you are called in. Ralph runs fresh agent iterations over a feature's `tasks.md`, committing one work unit per iteration, until every task is done. Idempotent: skip steps that are already satisfied.
+Install and configure the [Ralph loop](https://github.com/Rubiss-Projects/spec-kit-ralph) spec-kit extension in the repository you are called in. Ralph runs fresh agent iterations over a feature's `tasks.md`, committing one work unit per iteration, until every task is done. Idempotent: skip steps already satisfied. The extension's README is the source of truth for versions, flags, and config keys.
 
 ## Steps
 
-1. **Check prerequisites.** Run `git rev-parse --show-toplevel`, `specify --version`, and `<agent_cli> --version` (default `copilot`). Done when the repo root is known, `specify` is at least 0.8.5, and the agent CLI answers. Ask the user (`ask_user`) before installing a missing tool, then install it from its upstream docs (spec-kit: https://github.com/github/spec-kit); report what stays missing.
-
-2. **Initialise spec-kit.** If `.specify/` is absent, run `specify init --here` with Copilot as the agent (take the exact flags from `specify init --help`). Done when `.specify/integration.json` exists.
-
-3. **Add the extension.**
-   ```
-   specify extension add ralph
-   ```
-   If the registry lookup fails, use the pinned archive: `specify extension add ralph --from https://github.com/Rubiss-Projects/spec-kit-ralph/archive/refs/tags/<latest tag>.zip`, taking the latest tag from the repo's releases. Done when `specify extension list` shows `Ralph Loop` as `Enabled`.
-
-4. **Configure.** Ask the user (`ask_user`, one form) for:
-   - `agent_cli`: `copilot`, `codex`, `claude`, or `opencode` (default `copilot`);
-   - `model`, valid for that CLI (an OpenCode model is `provider/model`);
-   - `max_iterations` (default `10`);
-   - `commit.style`: `legacy` or `conventional`, plus `scope` and `issue: auto` when conventional.
-
-   Write the answers that differ from the defaults into `.specify/extensions/ralph/ralph-config.yml`. Personal overrides belong in `ralph-config.local.yml`; make sure `.gitignore` lists it. Done when the config file holds the chosen values and parses as YAML.
-
-5. **Show the result.** Show `git status` and the config. Tell the user:
-   - Ralph runs iterations unattended with permissions skipped (`--yolo` for Copilot, `--dangerously-skip-permissions` for Claude), so run it only in a trusted working directory.
-   - Start a loop from a feature branch with a completed `tasks.md`: `/speckit.ralph.run` (options `--max-iterations`, `--model`).
+1. **Check prerequisites.** Run `git rev-parse --show-toplevel`, `specify --version`, and `copilot --version`. Done when the repo root is known and both tools meet the README's prerequisites. Ask the user (`ask_user`) before installing a missing tool from its upstream docs; report what stays missing.
+2. **Initialise spec-kit.** When `.specify/` is absent, run `specify init --here` with Copilot as the agent, taking the flags from `specify init --help`. Done when `.specify/integration.json` exists.
+3. **Add the extension**: `specify extension add ralph`. When the registry lookup fails, install the latest release archive with `--from` as the README shows. Done when `specify extension list` shows Ralph Loop as enabled.
+4. **Configure.** Read `.specify/extensions/ralph/ralph-config.yml` and ask the user (`ask_user`, one form) for each setting it holds, with its current value as the default. Write the changed values back; personal overrides go to `ralph-config.local.yml`, which `git check-ignore` must confirm as ignored. Done when the config holds the chosen values and parses as YAML.
+5. **Show** `git status` and the config, then tell the user:
+   - Ralph runs every iteration unattended with permission prompts skipped (`--yolo` for Copilot), so run it only in a trusted working directory.
+   - Start a loop with `/speckit.ralph.run` on a feature branch with a completed `tasks.md`.
 
    Leave committing to the user.

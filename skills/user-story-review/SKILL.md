@@ -7,67 +7,55 @@ disable-model-invocation: true
 
 # User-story review
 
-Review the implementation of one user story against the brief that `user-story-research` saved. Run two read-only subagents **sequentially**; the main agent alone writes the review. Application code and tickets stay unchanged; the brief changes only by its `## Review` section.
+Review the implementation of one story against the **brief** `user-story-research` saved in `docs\US-<ID>.md`. Two agents run **sequentially**, each a read-only, high-effort subagent. The main agent alone writes the review, as the brief's `## Review` section; code, the tracker, and the rest of the brief stay unchanged.
 
 ## Input
 
-Resolve the story ID from the skill argument or the current conversation, then read `docs\US-<ID>.md` in the target repository. If the brief is missing, tell the user to run `user-story-research` first and stop.
+1. Resolve the story ID from the skill argument or the conversation and read the brief. If it is missing, tell the user to run `user-story-research` first and stop.
+2. Take the language from the brief's `Language:` line (English when absent).
+3. Determine the **scope**: the changes since the branch point from the default branch, uncommitted changes, and every file the brief names.
 
-Take the output language from the brief; it is the Language the research used.
-
-Determine the implementation scope: the changes since the branch point from the default branch plus uncommitted changes, and every file the brief names. Done when the scope is a concrete list of changed and brief-named files; ask the user (`ask_user`) when no changes can be found or the base is ambiguous.
+Done when the scope is a concrete file list. Ask the user (`ask_user`) when no changes are found or the base branch is ambiguous.
 
 ## Agent 1 — conformance
 
-Dispatch one read-only, high-effort subagent.
+Give it the brief, the scope, and the repository. Tell it to give **every acceptance criterion** a status (`met`, `partial`, `not met`, `unverifiable`, as in the brief) and evidence read from the code itself, and to check against the implementation:
 
-Give it the brief, the scope list, and the repository workspace. Tell it to judge **every acceptance criterion** in the brief as `met`, `partial`, `not met`, or `unverifiable`, citing `file:line` read from the code itself, and to check each of these against the implementation:
-
-- each concrete change the brief lists;
+- each change the brief lists;
 - each verification case, including whether a test exists and covers it;
-- each decision in the clarification record;
-- behavior in the changes that no criterion or decision asks for (scope creep).
+- each entry of the decision record;
+- **scope creep**: behavior in the changes that no criterion or decision asks for.
 
-Require a structured report with one row per criterion, one row per listed change and verification case, and the scope-creep findings.
-
-Completion criterion: every criterion, listed change, verification case, and recorded decision has a status with a `file:line` citation or `missing`.
+Completion criterion: every criterion, listed change, verification case, and decision has a status with `file:line` or `missing`, and scope creep has an explicit result.
 
 ## Agent 2 — simplicity
 
-After Agent 1 completes, dispatch a second read-only, high-effort subagent.
+Give it the scope, the conformance report, and the repository. Tell it to run the `ponytail-review` skill over the scope and report each finding as `bloat`, `duplication`, or `simplification`, with `file:line` and the replacement. A finding that would lower a criterion below `met` is marked as a trade-off.
 
-Give it the scope list, the conformance report, and the repository workspace. Tell it to run the `ponytail-review` skill over the scope, reading the changed code together with its callers and neighbours, and to find:
-
-- **Bloat**: code, abstraction, configuration, or dependency the story does not need;
-- **Duplication**: logic repeated within the change, or already present elsewhere in the repository and reusable;
-- **Simplifications**: a smaller, more direct solution that keeps every criterion `met`, stated concretely.
-
-Report `ponytail-review` findings in these categories. Require each finding with `file:line`, why it is excess, and the replacement. A finding that would break a criterion is marked as a trade-off.
-
-Completion criterion: every changed file is covered, and each has either findings or an explicit `no findings`.
+Completion criterion: every file in the scope has findings or an explicit `no findings`.
 
 ## Main-agent synthesis
 
-Reconcile both reports. Rank findings by impact: unmet criteria first, then missing tests, then scope creep, then bloat, duplication, and simplifications. Keep uncertainty explicit.
+Rank the findings: unmet criteria (`gap`), missing tests (`test`), scope creep (`scope`), then `bloat`, `duplication`, `simplification`.
 
 ### Save the review
 
-Write the review in the configured language as a `## Review` section at the end of `docs\US-<ID>.md`. Replace an existing `## Review` section with the refreshed one, preserving manually recorded decisions; the rest of the brief stays as it is. The section holds the reviewed branch/commit (marking uncommitted changes), the criteria table, the ranked findings with proposed fixes, and the open questions.
+Write the `## Review` section at the end of the brief in the brief's language, replacing an earlier `## Review` section while keeping its manually recorded decisions. It holds the reviewed branch/commit (marking uncommitted changes), the criteria table, the ranked findings with proposed fixes, and the open questions.
 
-Completion criterion: the section exists, has been read back, and accounts for every criterion and every finding. If saving fails, report the failure.
+Completion criterion: the section has been read back and accounts for every criterion and every finding. If saving fails, report the failure.
 
 ### Chat report
 
-Return the report in the configured language as exactly these sections in this order, starting directly with the first line, with headings and fixed phrases translated:
+Return exactly these sections in this order, in the brief's language (headings and fixed phrases translated), starting on the first line:
 
 **US: Title** · Verdict (`ready`, `needs changes`, or `blocked`)
 
-**Criteria:** One row per acceptance criterion.
+**Criteria:**
 
 | Criterion | Status | Evidence |
 | --- | --- | --- |
-| Exact tracker wording | `met`, `partial`, `not met`, or `unverifiable` | `file:line` or `missing` |
+| Exact tracker wording | status | `file:line` or `missing` |
 
-**Findings:** Ranked, one line each: type (`gap`, `test`, `scope`, `bloat`, `duplication`, `simplification`), `file:line`, proposed fix. When there are none, write exactly: `None`.
+**Findings:** Ranked, one line each: type, `file:line`, proposed fix. When there are none, write exactly: `None`.
 
-**Next step:** Apply the fixes from the `## Review` section of `docs\US-<ID>.md` (referenced only after a successful read-back).
+**Next step:** Apply the fixes from the `## Review` section of `docs\US-<ID>.md` (named only after a successful read-back).

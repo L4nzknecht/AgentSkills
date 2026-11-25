@@ -1,22 +1,13 @@
 ---
 name: user-story-research
 description: Research a user story from the issue tracker (Azure DevOps, Jira, ...) and save an implementation brief under docs.
-argument-hint: "Work-item URL or story key/number"
+argument-hint: "Story URL, number, or key"
 disable-model-invocation: true
 ---
 
 # User-story research
 
-Run three read-only subagents **sequentially**, passing each completed report to the next. The main agent alone writes the implementation brief; application code, tickets, and knowledge-base pages stay unchanged.
-
-## Input
-
-Resolve the user-story reference from the skill argument or the current conversation. Accept either:
-
-- a tracker URL to a work item or board card (Azure DevOps `workitem=<number>`, Jira `browse/<KEY-123>`), or
-- `USER STORY <number>` / a bare ID / a Jira key.
-
-Take tracker, organization or site, project, and knowledge base from the Configuration table below. Done when all have values: a URL input fills tracker, organization or site, and project; ask the user (`ask_user`) for any that remain `<unset>`. Preserve the story ID resolved from the input. If the reference cannot be resolved, stop and report the missing input.
+Research one story and save its **brief**, the document a later coding session implements from. Three agents run **sequentially**, each a read-only, high-effort subagent receiving the previous reports. The main agent alone writes the brief; code, the tracker, and the knowledge base stay unchanged.
 
 ## Configuration
 
@@ -28,111 +19,67 @@ Take tracker, organization or site, project, and knowledge base from the Configu
 | Organization or site | `<unset>` |
 | Project | `<unset>` |
 | Knowledge base (Azure DevOps wiki, Confluence space, ...; name or URL) | `<unset>` |
-| Language (chat report, questions, brief) | `English` |
+| Specifications (repo path and the repo's name for them, e.g. `docs`, PFS) | `docs` |
+| Language (questions, brief, chat report) | `English` |
 
-Resolve the target repository from the current coding workspace and verify its relationship to the ticket. If no writable repository workspace is available or several repositories could apply, obtain the workspace or clarification before proceeding. The chat scratch directory is not a target repository.
+## Input
 
-## Agent 1 — work item and knowledge base
+1. Resolve the story from the skill argument or the conversation: a tracker URL (Azure DevOps `workitem=<number>`, Jira `browse/<KEY-123>`), a number, or a Jira key. The resolved ID is `<ID>` throughout.
+2. Fill every `<unset>` setting: a URL supplies tracker, organization or site, and project; ask the user (`ask_user`) for the rest.
+3. Resolve the target repository: the git checkout of the codebase the story belongs to (`git rev-parse --show-toplevel`). Ask the user when several repositories could apply.
 
-Dispatch one read-only, high-effort subagent.
+Done when the story ID, every setting, and the target repository are known. If the story cannot be resolved, report the missing input and stop.
 
-Give it:
+## Agent 1 — story and knowledge base
 
-- the resolved tracker, organization or site, project, story ID, and source URL;
-- the instruction to read the complete work item, including title, status, assignee, priority, story points, epic, description, acceptance criteria, relations, comments, and revisions when available;
-- the instruction to search the configured knowledge base for pages relevant to this user story.
+Give it the tracker settings, story ID, and source URL. Tell it to read the complete story (title, status, assignee, priority, story points, epic, description, acceptance criteria, relations, comments, revisions) and search the knowledge base for pages relevant to it.
 
-Require a structured report containing:
+Require a structured report:
 
-1. Exact acceptance-criteria wording from the tracker.
-2. Work-item metadata and links to related tickets.
-3. Each relevant knowledge-base page with its title, URL/path, and the requirement it establishes.
-4. An explicit `none found` result when no relevant knowledge-base entry exists.
-5. All unresolved story requirements, contradictions, and missing decisions, each tied to its source or affected acceptance criterion. Separate unavailable sources from sources that were successfully searched but contain insufficient information.
+1. Every acceptance criterion, verbatim.
+2. Story metadata and links to related stories.
+3. Each relevant knowledge-base page: title, URL, the requirement it sets.
+4. Every unresolved requirement, contradiction, and missing decision, tied to its source or criterion; unavailable sources kept apart from searched sources that lacked information.
 
-Completion criterion: every acceptance criterion is quoted verbatim, every metadata field requested above is either evidenced or marked unavailable, and the knowledge-base search has an explicit result.
+Completion criterion: every criterion is verbatim, every metadata field is evidenced or marked unavailable, and the knowledge-base search has an explicit result (`none found` when empty).
 
 ## Clarification gate — main agent
 
-After Agent 1 returns, check whether the story and knowledge base define the intended behavior sufficiently to judge every acceptance criterion. Resolve unclear scope, business rules, terminology, boundary cases, contradictory requirements, and missing acceptance criteria with the user **before dispatching Agent 2 or Agent 3**. A missing knowledge base alone does not require questions when the story is sufficient.
+Judge whether the story and knowledge base define the behavior well enough to judge every acceptance criterion. Resolve unclear scope, business rules, terminology, boundary cases, contradictions, and missing criteria with the user **before Agent 2**; a missing knowledge base alone needs no questions when the story is sufficient.
 
-Use `ask_user` in the configured Language for every required question. State the affected criterion and the concrete missing decision; group related questions in a focused form. Present alternatives as proposals, not established requirements. Use further forms when answers expose additional ambiguities, until every identified story ambiguity is resolved.
+Ask with `ask_user` in the configured language: name the affected criterion and the concrete missing decision, group related questions in one form, and offer alternatives as proposals. Repeat until no ambiguity remains.
 
-Keep a decision record with each question, the user's answer, and the affected requirement. Preserve the original tracker acceptance-criteria wording; record user clarifications separately. Pass this record alongside the research reports to both remaining agents.
+Keep a **decision record** (question, answer, affected requirement), separate from the original story wording, and pass it to every later agent.
 
-Completion criterion: every identified story ambiguity has an explicit user answer or a supporting source that resolves it. If the user cancels, declines a required answer, or defers a decision, pause the pipeline and report the blocker; resume only once it is resolved. Source-access failures also remain explicit blockers when they prevent understanding the story. When the evidence is already sufficient, pass the gate without asking redundant questions.
+Completion criterion: every ambiguity has a user answer or a resolving source. When the user cancels or defers a required answer, or a source failure blocks understanding the story, report the blocker and pause until it is resolved.
 
-## Agent 2 — repository documentation and PFS
+## Agent 2 — repository specifications
 
-After the clarification gate passes, dispatch a second read-only, high-effort subagent.
+Give it the Agent 1 report, the decision record, the Specifications setting, and the repository. Tell it to find every specification in the configured location relevant to the story (functional specs, requirement docs, ADRs, under the repo's own name for them) and extract what each requires.
 
-Give it the work-item report and the repository workspace. Tell it to inspect the repository's `docs` folder and identify the repository's meaning of **PFS** from filenames, configuration, or existing documentation before searching. Then inspect every relevant document and PFS entry for requirements related to the user story.
+Require a structured report: each source with its repo-relative path, the requirement or decision it contributes, and every conflict with the story.
 
-Require a structured report containing:
-
-1. Relevant documents and PFS entries, each with a repository-relative path.
-2. The exact requirement or decision each source contributes.
-3. Any conflict between the repository material and the tracker story.
-4. An explicit `none found` result when no relevant document or PFS entry exists.
-
-Completion criterion: all relevant `docs` and PFS sources have been checked, each reported source has a path and extracted requirement, and conflicts are stated explicitly.
+Completion criterion: every relevant specification has a path and an extracted requirement, conflicts are explicit, and the search has an explicit result (`none found` when empty).
 
 ## Agent 3 — codebase evidence
 
-After Agent 2 completes, dispatch a third read-only, high-effort subagent. If Agent 2 uncovered new story ambiguities or contradictions with the confirmed decisions, first resolve them through the clarification gate and update the decision record.
+When Agent 2 surfaced new ambiguities, run the clarification gate again first.
 
-Give it both previous reports and the repository workspace. Tell it to locate the implementation covering the ticket and inspect all relevant layers:
+Give it both reports, the decision record, and the repository. Tell it to locate the implementation covering the story across every relevant layer: endpoints and routes, services and business logic, schemas and models, migrations, tests, configuration, integrations and callers.
 
-- endpoints and routes;
-- services and business logic;
-- schemas and models;
-- migrations;
-- tests;
-- configuration;
-- related integrations and callers.
+For **every acceptance criterion**, it assigns a **status**:
 
-For **every acceptance criterion**, judge the implementation as `met`, `partial`, `not met`, or `unverifiable`. Cite concrete evidence as `file:line`, read from the code itself rather than inferred from filenames. For missing or incomplete behavior, name the concrete files that would need changes.
+| Status | Meaning |
+| --- | --- |
+| `met` | fully implemented |
+| `partial` | implemented in part |
+| `not met` | absent |
+| `unverifiable` | cannot be judged from the code |
 
-Completion criterion: every acceptance criterion has a status, at least one precise evidence citation or `missing`, and missing behavior has concrete candidate files or an explicit reason no file can be identified.
+Each status carries **evidence**: `file:line` read from the code itself, or `missing`. Missing behavior names the files that would change, or the reason none can be named.
+
+Completion criterion: every criterion has a status and evidence, and every gap has candidate files or a reason.
 
 ## Main-agent synthesis
 
-After all three agents finish, reconcile their reports. Prefer direct tracker wording for acceptance criteria, repository evidence for implementation status, and the most specific source when documents conflict. Keep uncertainty explicit.
-
-### Save the implementation brief
-
-Write a Markdown document in the configured Language to `docs\US-<ID>.md` relative to the target repository root. Create `docs` if needed. Read an existing document at that path first; refresh the research while preserving manually recorded decisions and unresolved questions. The generated brief is research output; on later runs the original sources stay the specification.
-
-The document must let a subsequent coding session implement the story without reconstructing the research. Include:
-
-- Work-item link, metadata, revision, research date, and inspected repository branch/commit; distinguish uncommitted changes when present.
-- Goal, scope, and every acceptance criterion in its exact tracker wording, with implementation status and `file:line` evidence or an explicit evidence gap.
-- Relevant knowledge-base, docs, and PFS sources with links/paths, their available version/date, and applicable requirements. Distinguish binding requirements from proposals and unresolved source conflicts.
-- Concrete changes needed for each incomplete criterion: existing or proposed file paths, intended behavior, affected endpoints/services/schema/migrations/configuration, and actual dependencies between changes.
-- Focused verification cases mapped to the criteria, including relevant edge cases and repository-standard commands identified from the project. Label proposed checks as not executed.
-- Open decisions, genuine contradictions, related-ticket dependencies, and blockers. Keep unresolved behavior explicit.
-- The clarification decision record, clearly attributed to the user and separate from the original story and knowledge-base text.
-
-When nothing needs changing, document the supporting evidence.
-
-Completion criterion: the file exists in the target repository, has been read back, accounts for every acceptance criterion, and names concrete changes and verification cases for every identified gap or explains the blocker. If saving fails, report the failure.
-
-### Chat report
-
-Return the completed research report in the configured **Language** as exactly these sections in this order, starting directly with the first line, with headings and fixed phrases translated. Intermediate `ask_user` forms and blocker messages follow their own format.
-
-**US: Title** · Status · Assignee · Priority · Story points · Epic
-
-**Goal:** One to two sentences.
-
-**Implementation status:** One row per acceptance criterion.
-
-| Criterion | Status | Evidence |
-| --- | --- | --- |
-| Exact tracker wording | what is the case | `file:line` or `missing` |
-
-**Specification:** One line per relevant knowledge-base page, document, or PFS source with title, version/date, and binding requirement. When no source is relevant, write exactly: `No relevant specification found`.
-
-**Conflicts:** Genuine contradictions, missing decisions, ambiguities, and related tickets. When there are none, write exactly: `None`.
-
-**Next step:** `grilling` skill based on `docs\US-<ID>.md` (the document is referenced only after a successful read-back).
+Reconcile the reports. Prefer tracker wording for criteria, code evidence for status, and the most specific source when specifications conflict. Then write the brief and the chat report as [`brief-format.md`](brief-format.md) defines them.
