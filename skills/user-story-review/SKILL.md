@@ -1,8 +1,7 @@
 ---
 name: user-story-review
-description: Review the whole implementation of a user story against its research brief, and check it for bloat, duplication, and simplifications.
+description: "Review a user story's implementation against its brief, docs/US-<ID>.md, including bloat and duplication. Use when the user asks to review a story's implementation, or a skill needs the brief's Review section."
 argument-hint: "Story ID, or path to docs/US-<ID>.md"
-disable-model-invocation: true
 ---
 
 # User-story review
@@ -15,7 +14,7 @@ Review the implementation of one story against the **brief** `user-story-researc
 2. Take the language from the brief's `Language:` line (English when absent).
 3. Determine the **scope**: the changes since the branch point from the default branch, uncommitted changes, and every file the brief names.
 
-Done when the scope is a concrete file list. When no changes are found or the base branch is ambiguous, ask the user with `ask_user` as a **multiple choice**: offer the candidate branches or scopes, with the recommended option first, marked "(recommended)" and preselected. The free-text field lets the user give their own answer.
+Done when the scope is a concrete file list. When no changes are found or the base branch is ambiguous, ask the user with the candidate branches or scopes as a **multiple choice**, as the `## Questions` section of [`../user-story-research/SKILL.md`](../user-story-research/SKILL.md) defines.
 
 ## Agent 1 — conformance
 

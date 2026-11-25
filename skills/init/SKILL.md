@@ -16,7 +16,7 @@ Install every pack in the table as a Copilot plugin. Idempotent: skip what is al
 | `mattpocock-skills` | `mattpocock/skills` | `mattpocock` |
 | `ponytail` | `DietrichGebert/ponytail` | `ponytail` |
 
-Add new packs here; the steps read this table.
+<!-- Add new packs to this table; the steps read it. -->
 
 ## Steps
 

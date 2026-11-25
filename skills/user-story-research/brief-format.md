@@ -2,7 +2,7 @@
 
 ## The brief
 
-Write the brief in the configured language to `docs\US-<ID>.md` in the target repository. When the file exists, read it first and refresh the research, preserving the manually recorded decisions, the open questions, and the `## Review` section written by `user-story-review`. On later runs the original sources stay the specification; the brief is research output.
+Write the brief in the configured language to `docs\US-<ID>.md` in the target repository. When the file exists, read it first and refresh the research, preserving the manually recorded decisions, the open questions, the `## Tasks` section written by `user-story-deliver`, and the `## Review` section written by `user-story-review`. On later runs the original sources stay the specification; the brief is research output.
 
 The brief lets a coding session implement the story without redoing the research. It holds:
 

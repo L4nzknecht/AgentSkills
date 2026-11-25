@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Record the repository's facts once, in `AGENTS.md`, and specialise `user-story-research` for it. Every file holds only verified facts about this repository.
 
-Ask every question with `ask_user` as a **multiple choice**: offer concrete options from what you detected. List the recommended option first, mark it "(recommended)" and preselect it. The free-text field lets the user give their own answer.
+Ask every question as a **multiple choice**, as the `## Questions` section of [`../user-story-research/SKILL.md`](../user-story-research/SKILL.md) defines.
 
 ## Steps
 
@@ -19,7 +19,7 @@ Ask every question with `ask_user` as a **multiple choice**: offer concrete opti
 5. **Generate `user-story-research-<repo>`** when the repo tracks user stories in an issue tracker; `<repo>` is the repository folder name in kebab-case.
    1. Confirm `copilot plugin list` shows `agent-skills`; otherwise tell the user to run `init` and skip to step 7. The general skill is the `skills/user-story-research/` folder of that plugin; its path is in `copilot plugin list` (live plugins) or under `~/.copilot/installed-plugins/`.
    2. Ask the user, in one form, for every Configuration setting of the general skill: tracker, organization or site, project, knowledge base, specifications location and name, and language. Take the options from `git remote`, the CI config and the docs.
-   3. Copy the general skill folder to `.github/skills/user-story-research-<repo>/`, set the frontmatter `name` to the folder name, and fill the Configuration table. The copy differs from the general skill only in these two places; re-run this step after the general skill changes.
+   3. Copy the general skill folder to `.github/skills/user-story-research-<repo>/`, set the frontmatter `name` to the folder name, delete the `disable-model-invocation` line so agents and `user-story-deliver` can call the copy, and fill the Configuration table. The copy differs from the general skill only in these three places; re-run this step after the general skill changes.
    4. The copy is personal: add `.github/skills/user-story-research-<repo>/` to the repo's `.gitignore`.
 
    Done when the copy's name matches its folder, no `<unset>` remains, and `git check-ignore` reports the copy as ignored. Only this skill is specialised; the plugin skills stay general.

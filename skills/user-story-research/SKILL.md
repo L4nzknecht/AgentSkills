@@ -1,6 +1,6 @@
 ---
 name: user-story-research
-description: Research a user story from the issue tracker (Azure DevOps, Jira, ...) and save an implementation brief under docs.
+description: "Research a user story from the issue tracker (Azure DevOps, Jira, ...) into an implementation brief, docs/US-<ID>.md. Use when the user asks to research or prepare a story, or a skill needs a story brief."
 argument-hint: "Story URL, number, or key"
 disable-model-invocation: true
 ---
