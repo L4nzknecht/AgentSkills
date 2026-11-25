@@ -1,6 +1,6 @@
 ---
 name: user-story-research
-description: Research a user story from the issue tracker (Azure DevOps, Jira, ...) and save a German implementation brief under docs.
+description: Research a user story from the issue tracker (Azure DevOps, Jira, ...) and save an implementation brief under docs.
 argument-hint: "Work-item URL or story key/number"
 disable-model-invocation: true
 ---
@@ -28,6 +28,7 @@ Take tracker, organization or site, project, and knowledge base from the Configu
 | Organization or site | `<unset>` |
 | Project | `<unset>` |
 | Knowledge base (Azure DevOps wiki, Confluence space, ...; name or URL) | `<unset>` |
+| Language (chat report, questions, brief) | `English` |
 
 Resolve the target repository from the current coding workspace and verify its relationship to the ticket. If no writable repository workspace is available or several repositories could apply, obtain the workspace or clarification before proceeding. The chat scratch directory is not a target repository.
 
@@ -55,7 +56,7 @@ Completion criterion: every acceptance criterion is quoted verbatim, every metad
 
 After Agent 1 returns, check whether the story and knowledge base define the intended behavior sufficiently to judge every acceptance criterion. Resolve unclear scope, business rules, terminology, boundary cases, contradictory requirements, and missing acceptance criteria with the user **before dispatching Agent 2 or Agent 3**. A missing knowledge base alone does not require questions when the story is sufficient.
 
-Use `ask_user` in German for every required question. State the affected criterion and the concrete missing decision; group related questions in a focused form. Present alternatives as proposals, not established requirements. Use further forms when answers expose additional ambiguities, until every identified story ambiguity is resolved.
+Use `ask_user` in the configured Language for every required question. State the affected criterion and the concrete missing decision; group related questions in a focused form. Present alternatives as proposals, not established requirements. Use further forms when answers expose additional ambiguities, until every identified story ambiguity is resolved.
 
 Keep a decision record with each question, the user's answer, and the affected requirement. Preserve the original tracker acceptance-criteria wording; record user clarifications separately. Pass this record alongside the research reports to both remaining agents.
 
@@ -90,9 +91,9 @@ Give it both previous reports and the repository workspace. Tell it to locate th
 - configuration;
 - related integrations and callers.
 
-For **every acceptance criterion**, judge the implementation as `erfüllt`, `teilweise`, `nicht erfüllt`, or `nicht belegbar`. Cite concrete evidence as `datei:zeile`, read from the code itself rather than inferred from filenames. For missing or incomplete behavior, name the concrete files that would need changes.
+For **every acceptance criterion**, judge the implementation as `met`, `partial`, `not met`, or `unverifiable`. Cite concrete evidence as `file:line`, read from the code itself rather than inferred from filenames. For missing or incomplete behavior, name the concrete files that would need changes.
 
-Completion criterion: every acceptance criterion has a status, at least one precise evidence citation or `fehlt`, and missing behavior has concrete candidate files or an explicit reason no file can be identified.
+Completion criterion: every acceptance criterion has a status, at least one precise evidence citation or `missing`, and missing behavior has concrete candidate files or an explicit reason no file can be identified.
 
 ## Main-agent synthesis
 
@@ -100,12 +101,12 @@ After all three agents finish, reconcile their reports. Prefer direct tracker wo
 
 ### Save the implementation brief
 
-Write a German Markdown document to `docs\US-<ID>.md` relative to the target repository root. Create `docs` if needed. Read an existing document at that path first; refresh the research while preserving manually recorded decisions and unresolved questions. The generated brief is research output; on later runs the original sources stay the specification.
+Write a Markdown document in the configured Language to `docs\US-<ID>.md` relative to the target repository root. Create `docs` if needed. Read an existing document at that path first; refresh the research while preserving manually recorded decisions and unresolved questions. The generated brief is research output; on later runs the original sources stay the specification.
 
 The document must let a subsequent coding session implement the story without reconstructing the research. Include:
 
 - Work-item link, metadata, revision, research date, and inspected repository branch/commit; distinguish uncommitted changes when present.
-- Goal, scope, and every acceptance criterion in its exact tracker wording, with implementation status and `datei:zeile` evidence or an explicit evidence gap.
+- Goal, scope, and every acceptance criterion in its exact tracker wording, with implementation status and `file:line` evidence or an explicit evidence gap.
 - Relevant knowledge-base, docs, and PFS sources with links/paths, their available version/date, and applicable requirements. Distinguish binding requirements from proposals and unresolved source conflicts.
 - Concrete changes needed for each incomplete criterion: existing or proposed file paths, intended behavior, affected endpoints/services/schema/migrations/configuration, and actual dependencies between changes.
 - Focused verification cases mapped to the criteria, including relevant edge cases and repository-standard commands identified from the project. Label proposed checks as not executed.
@@ -118,20 +119,20 @@ Completion criterion: the file exists in the target repository, has been read ba
 
 ### Chat report
 
-Return the completed research report in **German** as exactly these sections in this order, starting directly with the first line. Intermediate `ask_user` forms and blocker messages follow their own format.
+Return the completed research report in the configured **Language** as exactly these sections in this order, starting directly with the first line, with headings and fixed phrases translated. Intermediate `ask_user` forms and blocker messages follow their own format.
 
-**US: Titel** · Status · Verantwortlicher · Priorität · Story Points · Epic
+**US: Title** · Status · Assignee · Priority · Story points · Epic
 
-**Ziel:** Ein bis zwei Sätze.
+**Goal:** One to two sentences.
 
-**Umsetzungsstand:** Eine Zeile je Akzeptanzkriterium.
+**Implementation status:** One row per acceptance criterion.
 
-| Kriterium | Stand | Fundstelle |
+| Criterion | Status | Evidence |
 | --- | --- | --- |
-| Exakter Wortlaut aus dem Tracker | was ist | `datei:zeile` oder `fehlt` |
+| Exact tracker wording | what is the case | `file:line` or `missing` |
 
-**Spezifikation:** Eine Zeile je relevanter Wiki-Seite, Dokumentation oder PFS-Quelle mit Titel, Stand und verbindlicher Anforderung. Wenn keine Quelle relevant ist, schreibe exakt: `Keine relevante Spezifikation gefunden`.
+**Specification:** One line per relevant knowledge-base page, document, or PFS source with title, version/date, and binding requirement. When no source is relevant, write exactly: `No relevant specification found`.
 
-**Konflikte:** Echte Widersprüche, fehlende Entscheidungen, Unklarheiten und verwandte Tickets. Wenn keine vorliegen, schreibe exakt: `Keine`.
+**Conflicts:** Genuine contradictions, missing decisions, ambiguities, and related tickets. When there are none, write exactly: `None`.
 
-**Nächster Schritt:** `grilling` skill auf Basis von `docs\US-<ID>.md` (the document is referenced only after a successful read-back).
+**Next step:** `grilling` skill based on `docs\US-<ID>.md` (the document is referenced only after a successful read-back).
