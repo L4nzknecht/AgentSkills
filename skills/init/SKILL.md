@@ -19,7 +19,7 @@ Add new packs here; the steps read this table.
 
 ## Own skills
 
-Every folder under `skills/` of the `L4nzknecht/AgentSkills` repo is a general skill, installed to `~/.copilot/skills/` (currently `init`, `repo-init`, `user-story-research`, `user-story-review`).
+Every folder under `skills/` of the `L4nzknecht/AgentSkills` repo is a general skill, installed to `~/.copilot/skills/` (currently `init`, `repo-init`, `user-story-research`, `user-story-review`, `repo-init-speckit-ralph`).
 
 ## Steps
 
