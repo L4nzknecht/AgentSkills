@@ -33,7 +33,7 @@ If a marketplace name differs, run `copilot plugin marketplace list` and use tha
 | [`init`](skills/init/SKILL.md) | One-time machine setup: installs all the plugins above into GitHub Copilot. |
 | [`repo-init`](skills/repo-init/SKILL.md) | Per-repo setup: tailors the general skills to the current repository (conventions, test/build commands, docs layout), including tracker access through an MCP server (Azure DevOps with a PAT, Jira/Confluence via the Atlassian server). |
 | [`user-story-research`](skills/user-story-research/SKILL.md) | General skill: researches a user story from the issue tracker (Azure DevOps, Jira, ...) plus its knowledge base (wiki, Confluence), repo docs and code, and saves a brief in a configurable language to `docs\US-<ID>.md`. `repo-init` copies it into the repo as `user-story-research-<repo>` with tracker, organization, project and knowledge base filled in. |
-| [`user-story-review`](skills/user-story-review/SKILL.md) | General skill: reviews the implementation against `docs\US-<ID>.md` from `user-story-research` (every criterion, tests, scope creep) and flags bloat, duplication and simplifications in `docs\US-<ID>-review.md`. |
+| [`user-story-review`](skills/user-story-review/SKILL.md) | General skill: reviews the implementation against `docs\US-<ID>.md` from `user-story-research` (every criterion, tests, scope creep) and flags bloat, duplication and simplifications in a `## Review` section of that file. |
 
 Install them by copying into your personal skills folder:
 

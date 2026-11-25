@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 # User-story review
 
-Review the implementation of one user story against the brief that `user-story-research` saved. Run two read-only subagents **sequentially**; the main agent alone writes the review. Application code, tickets, and the brief stay unchanged.
+Review the implementation of one user story against the brief that `user-story-research` saved. Run two read-only subagents **sequentially**; the main agent alone writes the review. Application code and tickets stay unchanged; the brief changes only by its `## Review` section.
 
 ## Input
 
@@ -36,13 +36,13 @@ Completion criterion: every criterion, listed change, verification case, and rec
 
 After Agent 1 completes, dispatch a second read-only, high-effort subagent.
 
-Give it the scope list, the conformance report, and the repository workspace. Tell it to read the changed code together with its callers and neighbours, and to find:
+Give it the scope list, the conformance report, and the repository workspace. Tell it to run the `ponytail-review` skill over the scope, reading the changed code together with its callers and neighbours, and to find:
 
 - **Bloat**: code, abstraction, configuration, or dependency the story does not need;
 - **Duplication**: logic repeated within the change, or already present elsewhere in the repository and reusable;
 - **Simplifications**: a smaller, more direct solution that keeps every criterion `met`, stated concretely.
 
-Require each finding with `file:line`, why it is excess, and the replacement. A finding that would break a criterion is marked as a trade-off.
+Report `ponytail-review` findings in these categories. Require each finding with `file:line`, why it is excess, and the replacement. A finding that would break a criterion is marked as a trade-off.
 
 Completion criterion: every changed file is covered, and each has either findings or an explicit `no findings`.
 
@@ -52,9 +52,9 @@ Reconcile both reports. Rank findings by impact: unmet criteria first, then miss
 
 ### Save the review
 
-Write a Markdown document in the configured language to `docs\US-<ID>-review.md`. Read an existing document at that path first and refresh it, preserving manually recorded decisions. Include the story link from the brief, the reviewed branch/commit (marking uncommitted changes), the criteria table, the ranked findings with proposed fixes, and the open questions.
+Write the review in the configured language as a `## Review` section at the end of `docs\US-<ID>.md`. Replace an existing `## Review` section with the refreshed one, preserving manually recorded decisions; the rest of the brief stays as it is. The section holds the reviewed branch/commit (marking uncommitted changes), the criteria table, the ranked findings with proposed fixes, and the open questions.
 
-Completion criterion: the file exists, has been read back, and accounts for every criterion and every finding. If saving fails, report the failure.
+Completion criterion: the section exists, has been read back, and accounts for every criterion and every finding. If saving fails, report the failure.
 
 ### Chat report
 
@@ -70,4 +70,4 @@ Return the report in the configured language as exactly these sections in this o
 
 **Findings:** Ranked, one line each: type (`gap`, `test`, `scope`, `bloat`, `duplication`, `simplification`), `file:line`, proposed fix. When there are none, write exactly: `None`.
 
-**Next step:** Apply the fixes from `docs\US-<ID>-review.md` (referenced only after a successful read-back).
+**Next step:** Apply the fixes from the `## Review` section of `docs\US-<ID>.md` (referenced only after a successful read-back).
