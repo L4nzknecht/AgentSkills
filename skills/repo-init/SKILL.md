@@ -8,17 +8,20 @@ disable-model-invocation: true
 
 Record the repository's facts once, in `AGENTS.md`, and specialise `user-story-research` for it. Every file holds only verified facts about this repository.
 
+Ask every question with `ask_user` as a **multiple choice**: offer concrete options from what you detected. List the recommended option first, mark it "(recommended)" and preselect it. The free-text field lets the user give their own answer.
+
 ## Steps
 
 1. **Inspect** the repo. Done when each of these is known or confirmed absent: languages, package manager, build/test/lint commands, folder layout, `AGENTS.md`/`CLAUDE.md`/`CONTRIBUTING.md`/`GLOSSARY.md`/`docs/adr`, specification docs, CI config, issue tracker. Run each command before recording it.
 2. **Required tools**: list every tool that an instruction file (`AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.github/instructions/`) tells the agent to invoke. For each tool this session lacks, follow [`required-tools.md`](required-tools.md). Done when every listed tool has answered one call.
-3. **Write `AGENTS.md`**: create it or extend the existing one. It holds what the environment cannot tell an agent: the build, test, and lint commands plus the smallest-test command, conventions and layout not obvious from the code, and where specs, ADRs, and the glossary live. Done when every command in it has run successfully and every path in it exists.
+3. **Write `AGENTS.md`**: create it or extend the existing one. It holds what the environment cannot tell an agent: the build, test, and lint commands plus the smallest-test command, conventions and layout not obvious from the code, and where specs, ADRs, and the glossary live. Done when every command in it has run successfully and every path in it exists. Then compare `AGENTS.md` with the other always-loaded instruction files (`CLAUDE.md`, `.github/copilot-instructions.md`, `.github/instructions/`). Record each **duplicate** (the same fact in two files) as file:line pairs for step 7, and leave those other files as they are.
 4. **Glossary**: when the code or docs use domain terms, run the `domain-modeling` skill to create or update `GLOSSARY.md`. Done when it exists, or the repo is confirmed to have no domain terms.
 5. **Generate `user-story-research-<repo>`** when the repo tracks user stories in an issue tracker; `<repo>` is the repository folder name in kebab-case.
    1. Confirm `~/.copilot/skills/user-story-research/` exists; otherwise tell the user to run `init` and skip to step 7.
-   2. Ask the user (`ask_user`, one form) for every Configuration setting of the general skill (tracker, organization or site, project, knowledge base, specifications location and name, language), with values detected from `git remote`, CI config, and docs as defaults.
+   2. Ask the user, in one form, for every Configuration setting of the general skill: tracker, organization or site, project, knowledge base, specifications location and name, and language. Take the options from `git remote`, the CI config and the docs.
    3. Copy the general skill folder to `.github/skills/user-story-research-<repo>/`, set the frontmatter `name` to the folder name, and fill the Configuration table. The copy differs from the general skill only in these two places; re-run this step after the general skill changes.
+   4. The copy is personal: add `.github/skills/user-story-research-<repo>/` to the repo's `.gitignore`.
 
-   Done when the copy's name matches its folder and no `<unset>` remains. Only this skill is specialised; the plugin skills stay general.
+   Done when the copy's name matches its folder, no `<unset>` remains, and `git check-ignore` reports the copy as ignored. Only this skill is specialised; the plugin skills stay general.
 6. **Tracker access**: follow [`tracker-azure-devops.md`](tracker-azure-devops.md) or [`tracker-jira.md`](tracker-jira.md) for the chosen tracker. Done when one story and one knowledge-base page read successfully through an MCP server.
-7. **Show the diff** and wait for the user's confirmation. Commit only when asked.
+7. **Show the diff** and the duplicates (or `none`), and wait for the user's confirmation. Commit only when asked.

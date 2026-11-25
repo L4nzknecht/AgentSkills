@@ -22,10 +22,14 @@ Research one story and save its **brief**, the document a later coding session i
 | Specifications (repo path and the repo's name for them, e.g. `docs`, PFS) | `docs` |
 | Language (questions, brief, chat report) | `English` |
 
+## Questions
+
+Ask every question with `ask_user`, in the configured language, as a **multiple choice**: offer two to four concrete options drawn from the evidence. List the recommended option first, mark it "(recommended)" and preselect it. The free-text field lets the user give their own answer. Group related questions in one form.
+
 ## Input
 
 1. Resolve the story from the skill argument or the conversation: a tracker URL (Azure DevOps `workitem=<number>`, Jira `browse/<KEY-123>`), a number, or a Jira key. The resolved ID is `<ID>` throughout.
-2. Fill every `<unset>` setting: a URL supplies tracker, organization or site, and project; ask the user (`ask_user`) for the rest.
+2. Fill every `<unset>` setting: a URL supplies tracker, organization or site, and project; ask the user for the rest.
 3. Resolve the target repository: the git checkout of the codebase the story belongs to (`git rev-parse --show-toplevel`). Ask the user when several repositories could apply.
 
 Done when the story ID, every setting, and the target repository are known. If the story cannot be resolved, report the missing input and stop.
@@ -47,7 +51,7 @@ Completion criterion: every criterion is verbatim, every metadata field is evide
 
 Judge whether the story and knowledge base define the behavior well enough to judge every acceptance criterion. Resolve unclear scope, business rules, terminology, boundary cases, contradictions, and missing criteria with the user **before Agent 2**; a missing knowledge base alone needs no questions when the story is sufficient.
 
-Ask with `ask_user` in the configured language: name the affected criterion and the concrete missing decision, group related questions in one form, and offer alternatives as proposals. Repeat until no ambiguity remains.
+For each question, name the affected criterion and the missing decision. Repeat until no ambiguity remains.
 
 Keep a **decision record** (question, answer, affected requirement), separate from the original story wording, and pass it to every later agent.
 

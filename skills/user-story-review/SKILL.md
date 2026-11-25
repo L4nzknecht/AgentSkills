@@ -15,7 +15,7 @@ Review the implementation of one story against the **brief** `user-story-researc
 2. Take the language from the brief's `Language:` line (English when absent).
 3. Determine the **scope**: the changes since the branch point from the default branch, uncommitted changes, and every file the brief names.
 
-Done when the scope is a concrete file list. Ask the user (`ask_user`) when no changes are found or the base branch is ambiguous.
+Done when the scope is a concrete file list. When no changes are found or the base branch is ambiguous, ask the user with `ask_user` as a **multiple choice**: offer the candidate branches or scopes, with the recommended option first, marked "(recommended)" and preselected. The free-text field lets the user give their own answer.
 
 ## Agent 1 — conformance
 
