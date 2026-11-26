@@ -5,7 +5,7 @@
   "plugins": [
     {
       "name": "agent-skills",
-      "description": "Machine and repo setup, user-story research and review, spec-kit Ralph loop setup.",
+      "description": "Machine and repo setup (Telecontext, ODS), user-story research, review and delivery, unslop, spec-kit Ralph loop setup.",
       "source": "./",
       "category": "productivity"
     }

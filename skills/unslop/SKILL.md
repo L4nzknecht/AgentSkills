@@ -10,7 +10,7 @@ Write prose a human reads as written by a person. Apply the patterns below to yo
 ## Process
 
 1. Draft the text.
-2. Scan it against every pattern below and rewrite each hit. Preserve meaning, match the intended tone.
+2. Scan it against every pattern below and rewrite each hit.
 3. Self-audit: "What makes this obviously AI generated?" Fix what remains.
 4. Send only the final text. Leave the audit out of the output.
 

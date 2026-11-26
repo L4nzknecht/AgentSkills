@@ -1,6 +1,6 @@
 {
   "name": "agent-skills",
-  "description": "Personal skills: machine and repo setup, user-story research and review, spec-kit Ralph loop setup.",
+  "description": "Personal skills: machine and repo setup (Telecontext, ODS), user-story research, review and delivery, unslop, spec-kit Ralph loop setup.",
   "version": "1.0.0",
   "author": { "name": "L4nzknecht" },
   "repository": "https://github.com/L4nzknecht/AgentSkills",

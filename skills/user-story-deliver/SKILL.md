@@ -7,9 +7,9 @@ disable-model-invocation: true
 
 # User-story deliver
 
-Take one story from the tracker to a reviewed implementation. The **brief** `docs\US-<ID>.md` is the one document every step reads and updates. Ask every question in the brief's language as a **multiple choice**, as the `## Questions` section of [`../user-story-research/SKILL.md`](../user-story-research/SKILL.md) defines.
+Take one story from the tracker to a reviewed implementation. The **brief** `docs\US-<ID>.md` is the one document every step reads and updates. Ask every question in the brief's language as a **multiple choice**, as [`../questions.md`](../questions.md) defines.
 
-- **Research skill**: `user-story-research-<repo>`, the repository's configured copy. When the repository has none, read [`../user-story-research/SKILL.md`](../user-story-research/SKILL.md) and follow it.
+- **Research skill**: `user-story-research-<repo>` in `~/.copilot/skills/`, the repository's configured copy; `<repo>` is resolved as `repo-init` step 5 defines (main checkout's folder name, kebab-case). When that copy is missing, read [`../user-story-research/SKILL.md`](../user-story-research/SKILL.md) and follow it.
 - **Review skill**: `user-story-review`.
 
 The main agent holds the user conversation and the brief; **subagents** do the code work in steps 7 and 9. Every subagent, including those the research and review skills dispatch, runs **sequentially**: each starts after the previous one reported, since they share one working tree and each builds on the last.

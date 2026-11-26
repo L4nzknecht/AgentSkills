@@ -1,6 +1,6 @@
 ---
 name: user-story-research
-description: "Research a user story from the issue tracker (Azure DevOps, Jira, ...) into an implementation brief, docs/US-<ID>.md. Use when the user asks to research or prepare a story, or a skill needs a story brief."
+description: "Research a user story from the issue tracker into an implementation brief, docs/US-<ID>.md."
 argument-hint: "Story URL, number, or key"
 disable-model-invocation: true
 ---
@@ -24,7 +24,7 @@ Research one story and save its **brief**, the document a later coding session i
 
 ## Questions
 
-Ask every question with `ask_user`, in the configured language, as a **multiple choice**: offer two to four concrete options drawn from the evidence. List the recommended option first, mark it "(recommended)" and preselect it. The free-text field lets the user give their own answer. Group related questions in one form.
+Ask every question as [`../questions.md`](../questions.md) defines.
 
 ## Input
 

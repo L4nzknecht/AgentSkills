@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Install and configure the [Ralph loop](https://github.com/Rubiss-Projects/spec-kit-ralph) spec-kit extension in the repository you are called in. Ralph runs fresh agent iterations over a feature's `tasks.md`, committing one work unit per iteration, until every task is done. Idempotent: skip steps already satisfied. The extension's README is the source of truth for versions, flags, and config keys.
 
-Ask every question as a **multiple choice**, as the `## Questions` section of [`../user-story-research/SKILL.md`](../user-story-research/SKILL.md) defines.
+Ask every question as a **multiple choice**, as [`../questions.md`](../questions.md) defines.
 
 ## Steps
 
