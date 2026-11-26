@@ -1,6 +1,6 @@
 ---
 name: user-story-review
-description: "Review a user story's implementation against its brief, docs/US-<ID>.md, including bloat and duplication. Use when the user asks to review a story's implementation, or a skill needs the brief's Review section."
+description: "Review a user story's implementation against its brief, docs/US-<ID>.md, including bloat and duplication, and draft a copy-ready tracker status comment. Use when the user asks to review a story's implementation or for its implementation status comment, or a skill needs the brief's Review section."
 argument-hint: "Story ID, or path to docs/US-<ID>.md"
 ---
 
@@ -58,3 +58,21 @@ Return exactly these sections in this order, in the brief's language (headings a
 **Findings:** Ranked, one line each: type, `file:line`, proposed fix. When there are none, write exactly: `None`.
 
 **Next step:** Apply the fixes from the `## Review` section of `docs\US-<ID>.md` (named only after a successful read-back).
+
+### Tracker comment
+
+When the user asks for a status comment, end the chat report with one copy-ready comment in a single plain-text code block, in the brief's language. It holds one list item per acceptance criterion, in the tracker's wording:
+
+- No symbol: `met`.
+- `⚠️`: `partial`, dependent, or to be added later.
+- `❌`: `not met` or currently not implementable.
+- Every `⚠️` and `❌` item names the concrete open point.
+
+```text
+*Implementation status:*
+- *<criterion>:* <concrete status>
+- *⚠️ <criterion>:* <what is done, what remains>
+- *❌ <criterion>:* <what is missing, e.g. the missing endpoint>
+```
+
+The comment stays in the chat; the tracker is read-only.

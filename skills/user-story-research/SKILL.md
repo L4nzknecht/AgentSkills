@@ -28,7 +28,7 @@ Ask every question with `ask_user`, in the configured language, as a **multiple 
 
 ## Input
 
-1. Resolve the story from the skill argument or the conversation: a tracker URL (Azure DevOps `workitem=<number>`, Jira `browse/<KEY-123>`), a number, or a Jira key. The resolved ID is `<ID>` throughout.
+1. Resolve the story from the skill argument or the conversation: a tracker URL (Azure DevOps `workitem=<number>`, Jira `browse/<KEY-123>`), a number, or a Jira key (`123` and `PROJ-123` both resolve to the full key). The resolved ID is `<ID>` throughout.
 2. Fill every `<unset>` setting: a URL supplies tracker, organization or site, and project; ask the user for the rest.
 3. Resolve the target repository: the git checkout of the codebase the story belongs to (`git rev-parse --show-toplevel`). Ask the user when several repositories could apply.
 
@@ -36,16 +36,16 @@ Done when the story ID, every setting, and the target repository are known. If t
 
 ## Agent 1 — story and knowledge base
 
-Give it the tracker settings, story ID, and source URL. Tell it to read the complete story (title, status, assignee, priority, story points, epic, description, acceptance criteria, relations, comments, revisions) and search the knowledge base for pages relevant to it.
+Give it the tracker settings, story ID, and source URL. For Jira and Confluence it also reads [`tracker-jira.md`](tracker-jira.md), which defines the Telecontext calls, key format, and fetch bounds. Tell it to read the complete story (title, status, assignee, priority, story points, epic, description, acceptance criteria, relations, subtasks, comments, revisions) and search the knowledge base for pages relevant to it.
 
 Require a structured report:
 
 1. Every acceptance criterion, verbatim.
-2. Story metadata and links to related stories.
-3. Each relevant knowledge-base page: title, URL, the requirement it sets.
-4. Every unresolved requirement, contradiction, and missing decision, tied to its source or criterion; unavailable sources kept apart from searched sources that lacked information.
+2. Story metadata, links to related stories, and the decisions and open questions found in comments and revisions.
+3. Each relevant knowledge-base page: title, URL, last-updated date, the requirement it sets per acceptance criterion.
+4. Every unresolved requirement, contradiction, and missing decision, tied to its source or criterion; unavailable sources kept apart from searched sources that lacked information. Contradicting tracker and knowledge-base statements are quoted verbatim side by side, with no winner picked.
 
-Completion criterion: every criterion is verbatim, every metadata field is evidenced or marked unavailable, and the knowledge-base search has an explicit result (`none found` when empty).
+Completion criterion: every criterion is verbatim, every metadata field is evidenced or marked unavailable, every requirement the sources do not state directly is marked `Unverified`, and the knowledge-base search has an explicit result (`none found` when empty).
 
 ## Clarification gate — main agent
 
