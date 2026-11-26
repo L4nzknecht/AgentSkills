@@ -13,6 +13,8 @@ Full, current skill lists live in each upstream repo (`skills/` folder).
 
 ## Install as plugins (GitHub Copilot app / CLI)
 
+These install commands require the GitHub Copilot CLI (`copilot`) to be installed and available on your `PATH`.
+
 ```bash
 copilot plugin marketplace add mattpocock/skills
 copilot plugin install mattpocock-skills@mattpocock
@@ -35,6 +37,7 @@ If a marketplace name differs, run `copilot plugin marketplace list` and use tha
 | [`user-story-research`](skills/user-story-research/SKILL.md) | General skill: researches a user story from the issue tracker (Azure DevOps, Jira, ...) plus its knowledge base (wiki, Confluence), repo docs and code, and saves a brief in a configurable language to `docs\US-<ID>.md`. `repo-init` copies it into the repo as the personal, git-ignored `user-story-research-<repo>` with its configuration (tracker, organization, project, knowledge base, specifications, language) filled in. |
 | [`user-story-review`](skills/user-story-review/SKILL.md) | General skill: reviews the implementation against `docs\US-<ID>.md` from `user-story-research` (every criterion, tests, scope creep), runs `ponytail-review` for bloat, duplication and simplifications, and writes the result in a `## Review` section of that file. |
 | [`user-story-deliver`](skills/user-story-deliver/SKILL.md) | Runs a story end to end: `user-story-research`, `grilling` on the brief, a summary for approval, `## Tasks` with acceptance criteria, one implementation subagent per task, `user-story-review`, fixes with `ponytail`, and a final presentation. |
+| [`unslop`](skills/unslop/SKILL.md) | Strips AI tells (filler, vague attributions, em dashes, mannered prose) from text. The agent applies it to its own user-facing output, and you can run it on any text. |
 | [`repo-init-speckit-ralph`](skills/repo-init-speckit-ralph/SKILL.md) | Per-repo setup of the [spec-kit Ralph loop](https://github.com/Rubiss-Projects/spec-kit-ralph): checks `specify`, initialises spec-kit, adds the `ralph` extension and writes its config (agent CLI, model, iterations, commit style). |
 
 This repo is a plugin marketplace (`.github/plugin/marketplace.json`) with one plugin, `agent-skills` (`plugin.json`). The skills load in every session, including general chats:
